@@ -3,8 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <title>Majiang</title>
+    <style>
+        *{
+            padding:0px;
+            margin: 0px;
+        }
+        #desk{
+
+            width:800px;
+            height: 680px;
+            background: #61ff91;
+            margin: 0 auto;
+        }
+        #desk img{
+            max-height: 48px;
+        }
+        #desk #left{
+            font-size: 0px;
+            text-align: center;
+            height: 50px;
+            width: 580px;
+            transform: translate(-265px,364px) rotate(90deg);
+        }
+        #desk #right{
+            font-size: 0px;
+            text-align: center;
+            height: 50px;
+            width: 580px;
+            transform: translate(485px,217px) rotate(270deg);
+        }
+        #desk #top{
+            font-size: 0px;
+            text-align: center;
+            height: 50px;
+            width: 700px;
+            transform: translate(0px,-100px) rotate(180deg);
+        }
+        #desk #bottom{
+            font-size: 0px;
+            text-align: center;
+            height: 50px;
+            width: 700px;
+            transform: translate(100px,480px) ;
+        }
+        .float-left{
+            float: left;
+        }
+        .float-right{
+            float: right;
+        }
+        #center{
+            background: rgba(151, 92, 21, 0.58);
+            width: 280px;
+            height: 160px;
+            transform: translate(270px,30px) ;
+        }
+        #east{
+            height: 20px;
+            transform: translate(-131px,143px) rotate(90deg);
+        }
+        #south{
+            height: 20px;
+            transform: translate(129px,-76px) rotate(270deg);
+        }
+        #west{
+            height: 20px;
+            transform: translate(-128px,-37px) rotate(180deg);
+        }
+        #east{
+            height: 20px;
+            text-align: center;
+            transform: translate(0px,140px) ;
+        }
+
+        .zimo{
+            padding-left: 4px;
+        }
+        .curr{
+            color:white;
+        }
+        #play-area .main{
+            width: 280px;
+            height:150px;
+            font-size: 0px;
+            background: chartreuse;
+            transform: translate(270px,37px)
+        }
+        #play-area .xiajia{
+            width: 280px;
+            height:150px;
+            font-size: 0px;
+            background: chartreuse;
+            transform: translate(490px,-297px) rotate(270deg);
+        }
+        #play-area .duijia{
+            width: 280px;
+            height:150px;
+            font-size: 0px;
+            background: chartreuse;
+            transform: translate(270px,-587px) rotate(180deg);
+        }
+        #play-area .shangjia{
+            width: 280px;
+            height:150px;
+            font-size: 0px;
+            background: chartreuse;
+            transform: translate(50px,-587px) rotate(90deg);
+        }
+        #play-notice {
+            display: block;
+            width: 580px;
+            color: white;
+            text-align: right;
+            transform: translate(30px, -375px);
+        }
+        #play-notice span {
+            display: none;
+            padding: 5px 20px;
+            font-size: 16px;
+            background: black;
+            border-radius: 5px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+    </style>
+
+    <script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+    <script type="text/javascript" src="js/Majiang.js"></script>
+    <script type="text/javascript" src="js/WebSocketService.js"></script>
+    <script type="text/javascript" src="js/Msg.js"></script>
+    <script type="text/javascript" src="js/Game.js"></script>
+    <script type="text/javascript" src="js/View.js"></script>
+    <script type="text/javascript" src="js/Player.js"></script>
     <script type="text/javascript">
-        function WebSocketTest()
+        function openWebSocket()
         {
             if ("WebSocket" in window)
             {
@@ -12,11 +145,23 @@
 
                 // 打开一个 web socket
                 var ws = new WebSocket("ws://localhost:8000");
+                var socketService = new WebSocketService(ws);
+                var viewService = Majiang.View;
+                var game = new Majiang.Game(socketService,viewService);
+                ws.onopen 		=  socketService.onSocketOpen;
+                ws.onclose		= socketService.onSocketClose;
+                ws.onmessage 	=  function(e){
+                    console.log(e);
+                    var msg = JSON.parse(e.data);
+                    socketService.processMessage(msg,game);
+                }
 
+                /*
                 ws.onopen = function()
                 {
                     // Web Socket 已连接上，使用 send() 方法发送数据
-                    ws.send("发送数据");
+                    //ws.send("发送数据");
+                    ws.send(JSON.stringify({type:"ready"}));
 
                 };
 
@@ -34,7 +179,7 @@
                 {
                     // 关闭 websocket
                     console.log(e);
-                };
+                }; */
             }
 
             else
@@ -43,15 +188,107 @@
                 alert("您的浏览器不支持 WebSocket!");
             }
         }
-        try {
-            WebSocketTest();
-        }catch (e) {
-            console.log("发生错误");
-            console.log(e);
-        }
+
+
+        $(document).ready(function(){
+            $("#start").click(function () {
+                try {
+                    openWebSocket();
+                }catch (e) {
+                    console.log("发生错误");
+                    console.log(e);
+                }
+            })
+        })
+        
     </script>
 </head>
 <body>
+<button id="start">
+    快速开始
+</button>
+<div id="desk">
+    <div id="left">
+        <div class="float-left">
+
+        </div>
+        <div class="float-right">
+
+        </div>
+    </div>
+
+    <div id="right">
+        <div class="float-left">
+
+
+        </div>
+        <div class="float-right">
+
+        </div>
+    </div>
+    <div id="top">
+        <div class="float-left">
+
+
+        </div>
+        <div class="float-right">
+
+        </div>
+    </div>
+    <div id="bottom">
+        <div class="float-left">
+
+
+        </div>
+
+        <div class="float-right">
+
+        </div>
+    </div>
+
+    <div id="center">
+        <div id="east">
+            东
+        </div>
+        <div id="south">
+            南
+        </div>
+        <div id="west">
+            西
+        </div>
+        <div id="north">
+            北
+        </div>
+
+    </div>
+    <!-- 出牌区域 -->
+    <div id="play-area">
+        <div class="main">
+
+
+        </div>
+        <div class="xiajia">
+
+        </div>
+
+        <div class="duijia">
+
+        </div>
+        <div class="shangjia">
+
+        </div>
+
+    </div>
+    <!-- 出牌提示 -->
+    <div id="play-notice">
+        <span class="peng">碰</span>
+        <span class="gang">杠</span>
+        <span class="buGang">补杠</span>
+        <span class="hu">胡</span>
+        <span class="pass">过</span>
+    </div>
+
+</div>
 
 </body>
 </html>
