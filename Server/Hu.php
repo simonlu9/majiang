@@ -17,7 +17,6 @@ class Hu
     const PATH_INDEPEND = 5;
     public $pairs = array();
     public $pros  = array();
-    public $walkPaths = array();
     public $tilesCount;
     public function __construct($tiles)
     {
@@ -42,10 +41,9 @@ class Hu
                 array_splice($keys,array_search($pairPro->val,$keys),1);
             }
             $_tileCount[$pairPro->val] = $_tileCount[$pairPro->val] -2;
-            $this->walkPaths = array();
             sort($keys);
-            $this->getTilePaths($keys,null); //这里要注意 改写递归接收者需要重构
-           foreach ($this->walkPaths as $path){
+            $walkPaths = $this->getTilePaths($keys,null); //已重构
+           foreach ($walkPaths as $path){
                 $flag = $this->tryMatch($_tileCount,$path);
                 if($flag == true){
                     print_r($_tileCount);
@@ -175,76 +173,28 @@ class Hu
          }
     }
     public function getTilePaths($tiles,$tilePath){
-        //$count =
-
         $tilePaths = $tilePath?$tilePath: array();
         if(count($tilePaths)==count($tiles)){
-            $this->walkPaths[] = $tilePaths;
+          //  $this->walkPaths[] = $tilePaths;
             return $tilePaths;
         }
         $index = count($tilePaths);
-        //$result = array();
+        $result = array();
         foreach($this->pros[$tiles[$index]]->paths as $path){
                 $tilePaths[$tiles[$index]] = $path;
 
-                $ret = $this->getTilePaths($tiles,$tilePaths); //(1,2) (1.3)
-                //$result[] = $ret;
-               // $this->walkPaths[] = $ret;
-                 array_pop($tilePaths);
+                $retArr = $this->getTilePaths($tiles,$tilePaths); //(1,2) (1.3)
+                if (count($retArr) == count($retArr, 1)) {
+                    $result[] = $retArr;
+                }else{
+                    foreach ($retArr as $ret){
+                        $result[] = $ret;
+                    }
+                }
+                array_pop($tilePaths);
         }
-        //return $result;
+        return $result;
 
     }
-    public static function main(){
-        $tiles1 = ['m1','m1','m1','m2','m2','m2','z1','z1'];
-        $tiles2 = ['m1','m1','m1','m2','m2','m2','m2','m3','m3','m3','m4','m4','m4','m4'];
-        $tiles3 = ['m1','m1','m1','p2','p3','p4','p9','p9','z1','z1','z1','z2','z2','z2'];
-        $tiles4 = ['m1','m2','m3','m7','m7','s2','s2','s6','s7','s8','m7'];
-        $tiles5 = ["m1","s8","s7","m2","s2","m7","m3","s2","s6","m7","m7"];
-//        foreach ($tiles1 as $k=>&$tile){
-//            print_r($tile);
-//            print_r($tiles1[$k]);
-//            $tiles1[3] = "zzz";
-//        }
-//        exit;
-        //$stime=microtime(true);
-        $hu = new Hu($tiles5);
-       // $etime=microtime(true);
-        //print_r($hu);
-        print_r($hu->tryHu());
-      //  $total=$etime-$stime;   #计算差值
-        //echo "{$total} times";
-        //$ret = $hu->getTilePaths(['m1','m2','m3','m4'],null);
-        //print_r($hu->pros);
-        //print_r($hu->walkPaths);
-    }
+
 }
-
-class Tile
-{
-    public $isPeng = false;
-    public $isGang = false;
-    public $isPair = false;
-    public $curPath = null;
-    public $type = null;
-    public $val = null;
-    public $size= 0;
-    public $paths = array();
-    public function __construct($val,$size,$type)
-    {
-        $this->val = $val;
-        $this->size = $size;
-        $this->type = $type;
-    }
-    public function setPaths($paths){
-        $this->paths = $paths;
-    }
-
-    public function  getPaths(){
-        return $this->paths;
-    }
-    public function  setSize($size){
-        $this->size = $size;
-    }
-}
-Hu::main();

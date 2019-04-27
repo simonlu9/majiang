@@ -21,9 +21,7 @@ class Majiang
         shuffle($tails);
         return $tails;
     }
-    public static function isHu($tiles){
 
-    }
     public static function checkIfPeng(Player $player,$tail){
         $tails = $player->tails;
         if(isset($tails[$tail])&&count($tails[$tail])>=2){
@@ -51,5 +49,3 @@ class Majiang
     }
 }
 
-//$tails = Majiang::shuffleTails();
-//print_r($tails);

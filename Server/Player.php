@@ -52,6 +52,11 @@ class Player
         $msg = new Msg("kaiju",array('tiles'=>$tiles,'location'=>$location,'roundId'=>$this->roundId));
         $this->connection->send(json_encode($msg));
     }
+
+    /**
+     * 出牌
+     * @param $tile
+     */
     public function play($tile){
         if(in_array($tile,$this->tiles)){
             array_splice($this->tiles,array_search($tile,$this->tiles),1);
@@ -136,8 +141,15 @@ class Player
     public function catchTail($tile){
         array_push($this->tiles,$tile);
     }
-    public function tiles2Map(){
 
+    /**
+     * 结局清理
+     */
+    public function jieju(){
+        $this->tiles = array();
+        $this->pengTiles = array();
+        $this->gangTiles= array();
+        $this->buGangTiles = array();
     }
     public function onWorkerStart($worker){}
     public function onConnect($connection){}

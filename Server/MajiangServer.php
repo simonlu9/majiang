@@ -49,8 +49,18 @@ class MajiangServer
 
         }
     }
+
+    /**
+     * 客户端关闭
+     * @param $connection
+     */
     public function onClose($connection){
-        unset($this->freePlayers[self::CONN_PREFIX.$connection->id]);
+        if(isset($this->freePlayers[self::CONN_PREFIX.$connection->id])){
+            unset($this->freePlayers[self::CONN_PREFIX.$connection->id]);
+        }else{ //如果在房间里面
+
+        }
+
     }
     public function onWorkerStop($connection){
 
